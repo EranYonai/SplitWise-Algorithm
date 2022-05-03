@@ -30,7 +30,7 @@ def splitAlgo(payments):
     for name in payments:
         payments[name] -= share
         payments[name] = round(payments[name], 2)
-    print("Share price: " + str(share))
+    print(f"{total_participants} Total Participants, each one should pay: {str(share)} ")
     print("-------------------------------------")
     while evenedOut(payments):
         min = getMin(payments)
