@@ -93,24 +93,19 @@ def splitAlgoOne(payments: dict) -> None:
     share = total_spent / total_participants
     # net cash everyone: NetChange(name) = (amount - share)
     for name in payments:
-        payments[name] -= share
-        payments[name] = round(payments[name], 2) #2?
+        payments[name] = round(payments[name] - share, 2)
     
     print(f"{total_participants} Total Participants, each one should pay: {str(share)} ")
     print("-------------------------------------")
-    # this is the heart algoritm, basic, easy, and has some problems. :), but it works.
+    # this is the heart algoritm
     while evenedOut(payments):
         min = getMin(payments)
         max = getMax(payments)
-        to_pay = 0
-        if abs(min[1]) <= max[1]:
-            to_pay = min[1]
-        else:
-            to_pay = max[1]
-        to_pay = abs(to_pay)
-        print(min[0] + " owes " + max[0] + " " + str(to_pay))
-        payments[max[0]] -= to_pay
-        payments[min[0]] = min[1] + to_pay
+        pay = 0
+        pay = abs(min[1] if (abs(min[1]) <= max[1]) else max[1])
+        print(min[0] + " owes " + max[0] + " " + str(pay))
+        payments[max[0]] -= pay
+        payments[min[0]] = min[1] + pay
     print("-------------------------------------")
 
 
@@ -165,7 +160,7 @@ def evenedOut(payments: dict) -> bool:
 def main():
     """Main function, kickstarter.
     """
-    splitAlgoOne(init())
+    splitAlgoZero(init())
 
 if __name__ == "__main__":
     main()
