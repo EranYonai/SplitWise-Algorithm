@@ -67,7 +67,7 @@ def splitAlgoZero(payments: dict) -> None:
         payments[min[0]] = 0
     print("-------------------------------------")
 
-    # this part is for future output, outputing the debt in a matrix using plotly and pandas.
+    # this part is for future output, outputing the debt in a matrix using numpy and pandas.
     # mat = matrix of payments
     # column_labels = [f"to_{person}" for person in payments.keys()] 
     # index_labels = [f"{person}_owes" for person in payments.keys()]
