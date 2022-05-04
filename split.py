@@ -7,7 +7,7 @@
 # 2. No one owes a person that they didn’t owe before, and (which is not as important imo)
 # 3. No one owes more money in total than they did before the simplification.
 #
-# Articles I've read on the subject:
+# Articles on the subject:
 # 1. NP Completeness - https://en.wikipedia.org/wiki/NP-completeness
 # 2. Dinic's Algorithm - https://en.wikipedia.org/wiki/Dinic%27s_algorithm
 # 3. Simplifying Payments with Linear Programming - https://miguelbiron.github.io/post/2018-02-09-simplifying-pmts-with-lp/
@@ -36,8 +36,13 @@ def init() -> dict:
         payments[toInsert[0]] = int(toInsert[1])
     return payments
     
-def splitAlgo(payments: dict) -> None:
+def splitAlgoZero(payments: dict) -> None:
     """This is my first approach to Splitwise Algorithm
+    not perfect, it will never pay more/less than needed but in certian cases it will make someone who basically doesn't need to pay - to pay.
+    for example, input: A 150, B 223, C 0, D 0 | net cash: A 57, B 130, C -93, D -93
+    1. C -> B 93 | A 57, B 36, C 0, D -93
+    2. D -> A 93 | A -36, B 36, C 0, D 0
+    3. A -> B 36 | A 0, B 0, C 0, D 0 # A does not need to pay in this case. optimal solution is that D/C pays some of the debt to A and some to B.
     Args:
         payments (dict): dictionary of {name: amount}
     """
@@ -53,8 +58,7 @@ def splitAlgo(payments: dict) -> None:
     print(f"{total_participants} Total Participants, each one should pay: {str(share)} ")
     print("-------------------------------------")
     # this is the heart algoritm, basic, easy, and has some problems. :), but it works.
-    # it will never pay more/less than the share, but in some cases, there can be a situation that for example:
-    # i'm lazy.
+
     while evenedOut(payments):
         min = getMin(payments)
         max = getMax(payments)
@@ -69,6 +73,45 @@ def splitAlgo(payments: dict) -> None:
     # index_labels = [f"{person}_owes" for person in payments.keys()]
     # df = pd.DataFrame(data=mat, columns=column_labels, index=index_labels)
     # return df.round(2)
+
+def splitAlgoOne(payments: dict) -> None:
+    """Second approach, which solves Zero's problems.
+    Rules:
+    1. Each Giver shall pay exactly his share, this can be divided between receviers.
+    2. Recivers shall not pay, only receive.
+    Let's see an example of the current algo:
+    input: A 150, B 223, C 0, D 0 | net cash: A 57, B 130, C -93, D -93
+    1. C -> B 93 | A 57, B 36, C 0, D -93
+    2. D -> A 57 | A 0, B 36, C 0, D 36
+    3. D -> B 37 | A 0, B 0, C 0, D 0 /exit
+    Args:
+        payments (dict): dictionary of {name: amount}
+    """
+    # start with integers i need:
+    total_participants = len(payments)
+    total_spent = sum(payments.values())
+    share = total_spent / total_participants
+    # net cash everyone: NetChange(name) = (amount - share)
+    for name in payments:
+        payments[name] -= share
+        payments[name] = round(payments[name], 2) #2?
+    
+    print(f"{total_participants} Total Participants, each one should pay: {str(share)} ")
+    print("-------------------------------------")
+    # this is the heart algoritm, basic, easy, and has some problems. :), but it works.
+    while evenedOut(payments):
+        min = getMin(payments)
+        max = getMax(payments)
+        to_pay = 0
+        if abs(min[1]) <= max[1]:
+            to_pay = min[1]
+        else:
+            to_pay = max[1]
+        to_pay = abs(to_pay)
+        print(min[0] + " owes " + max[0] + " " + str(to_pay))
+        payments[max[0]] -= to_pay
+        payments[min[0]] = min[1] + to_pay
+    print("-------------------------------------")
 
 
 def getMin(payments: dict) -> list:
@@ -120,9 +163,9 @@ def evenedOut(payments: dict) -> bool:
 
 
 def main():
-    """_summary_: Main function, kickstarter.
+    """Main function, kickstarter.
     """
-    splitAlgo(init())
+    splitAlgoOne(init())
 
 if __name__ == "__main__":
     main()
