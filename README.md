@@ -9,7 +9,7 @@ According to Splitwise themselves, the greedy algorithm is the best approach.
 
 And the rules are (according to SplitWise):
 1. Everyone owes the same net amount at the end,
-2. No one owes a person that they didn’t owe before, and (which is not as important imo)
+2. No one owes a person that they didn’t owe before, and
 3. No one owes more money in total than they did before the simplification.
 
 Intersting reads on the subject:
